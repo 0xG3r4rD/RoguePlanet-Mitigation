@@ -17,6 +17,8 @@ redirecting execution through a fake `wermgr.exe`.
 ## Files
 
 - `Add-RoguePlanetWermgrBlock.ps1` - installs the AppLocker mitigation.
+- `Remove-RoguePlanetWermgrBlock.ps1` - removes the mitigation rules and
+  related compatibility adjustments as a failsafe rollback.
 - `Test-RoguePlanetWermgrBlock.ps1` - safely validates the rule using a benign
   copied Windows binary named `wermgr.exe`.
 
@@ -46,6 +48,18 @@ Application Identity service to evaluate rules.
 The script also adds a packaged-app compatibility allow rule. This keeps
 Microsoft Store/MSIX apps such as Microsoft Teams working when EXE AppLocker
 rules are enforced.
+
+## Rollback
+
+Run PowerShell as Administrator.
+
+```powershell
+.\Remove-RoguePlanetWermgrBlock.ps1
+```
+
+The rollback script removes only the AppLocker rule IDs created by this
+mitigation and preserves unrelated AppLocker rules. It also writes a backup of
+the current local AppLocker policy before applying the rollback.
 
 ## Language Compatibility
 
