@@ -20,11 +20,12 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $ids = @{
-    AllowAll = '2F5E8B9F-3A28-4D3D-95CB-64120E18F9E8'
-    Admin    = 'A86E4D7E-2147-46F0-B5AF-A7F9670A3D71'
-    Win      = '0D2EA50A-92BC-47C4-B544-9980E80EB90A'
-    Pf       = '50B3D746-23E2-40D9-8461-42D0D987F4F7'
-    Wermgr   = 'F3451271-AB52-45F5-A34D-6779E6516343'
+    AllowAll     = '2F5E8B9F-3A28-4D3D-95CB-64120E18F9E8'
+    AllowAppxAll = '65D1A7D2-64D8-4AF2-8B39-E6B97B5C0A9D'
+    Admin        = 'A86E4D7E-2147-46F0-B5AF-A7F9670A3D71'
+    Win          = '0D2EA50A-92BC-47C4-B544-9980E80EB90A'
+    Pf           = '50B3D746-23E2-40D9-8461-42D0D987F4F7'
+    Wermgr       = 'F3451271-AB52-45F5-A34D-6779E6516343'
 }
 
 $principal = [Security.Principal.WindowsPrincipal]::new([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -79,6 +80,15 @@ $compatibilityRule
         <FilePathCondition Path="%WINDIR%\SysWOW64\wermgr.exe" />
       </Exceptions>
     </FilePathRule>
+  </RuleCollection>
+  <RuleCollection Type="Appx" EnforcementMode="$enforcement">
+    <FilePublisherRule Id="$($ids.AllowAppxAll)" Name="Compatibility Allow - Everyone - All packaged apps" Description="Keeps this mitigation focused on fake wermgr.exe blocking without packaged-app collateral damage." UserOrGroupSid="S-1-1-0" Action="Allow">
+      <Conditions>
+        <FilePublisherCondition PublisherName="*" ProductName="*" BinaryName="*">
+          <BinaryVersionRange LowSection="0.0.0.0" HighSection="*" />
+        </FilePublisherCondition>
+      </Conditions>
+    </FilePublisherRule>
   </RuleCollection>
 </AppLockerPolicy>
 "@

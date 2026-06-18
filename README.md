@@ -39,6 +39,10 @@ After reviewing AppLocker events, enforce the block:
 The script starts the `AppIDSvc` service because AppLocker requires the
 Application Identity service to evaluate rules.
 
+The script also adds a packaged-app compatibility allow rule. This keeps
+Microsoft Store/MSIX apps such as Microsoft Teams working when EXE AppLocker
+rules are enforced.
+
 ## Safe Validation
 
 Run:
