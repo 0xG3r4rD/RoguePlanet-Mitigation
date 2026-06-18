@@ -20,6 +20,10 @@ redirecting execution through a fake `wermgr.exe`.
 - `Test-RoguePlanetWermgrBlock.ps1` - safely validates the rule using a benign
   copied Windows binary named `wermgr.exe`.
 
+## Changes
+
+Readable dated changes are tracked in [CHANGELOG.md](CHANGELOG.md).
+
 ## Install
 
 Run PowerShell as Administrator.
