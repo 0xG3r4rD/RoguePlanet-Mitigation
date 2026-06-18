@@ -43,6 +43,13 @@ The script also adds a packaged-app compatibility allow rule. This keeps
 Microsoft Store/MSIX apps such as Microsoft Teams working when EXE AppLocker
 rules are enforced.
 
+## Language Compatibility
+
+The scripts are designed to work on Windows installs in any display language.
+They avoid localized group names such as `Everyone` and use language-neutral
+SIDs, AppLocker event IDs, executable names, and Windows environment variables
+such as `%WINDIR%` instead.
+
 ## Safe Validation
 
 Run:

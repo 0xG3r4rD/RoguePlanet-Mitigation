@@ -19,6 +19,10 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# Language-neutral identifiers. AppLocker accepts SIDs and environment
+# variables regardless of the Windows display language.
+$sidAllUsers = 'S-1-1-0'
+
 $ids = @{
     AllowAll     = '2F5E8B9F-3A28-4D3D-95CB-64120E18F9E8'
     AllowAppxAll = '65D1A7D2-64D8-4AF2-8B39-E6B97B5C0A9D'
@@ -61,7 +65,7 @@ $unknownRuleIds = @($existingRuleIds | Where-Object { $_ -notin $knownRuleIds })
 $addCompatibilityAllow = ($existingRuleIds.Count -eq 0) -or ($unknownRuleIds.Count -eq 0)
 $compatibilityRule = if ($addCompatibilityAllow) {
 @"
-    <FilePathRule Id="$($ids.AllowAll)" Name="Compatibility Allow - Everyone - All executables" Description="Keeps this mitigation focused on denying fake wermgr.exe without turning on broad application lockdown." UserOrGroupSid="S-1-1-0" Action="Allow">
+    <FilePathRule Id="$($ids.AllowAll)" Name="Compatibility Allow - All users - All executables" Description="Keeps this mitigation focused on denying fake wermgr.exe without turning on broad application lockdown." UserOrGroupSid="$sidAllUsers" Action="Allow">
       <Conditions><FilePathCondition Path="*" /></Conditions>
     </FilePathRule>
 "@
@@ -73,7 +77,7 @@ $xml = @"
 <AppLockerPolicy Version="1">
   <RuleCollection Type="Exe" EnforcementMode="$enforcement">
 $compatibilityRule
-    <FilePathRule Id="$($ids.Wermgr)" Name="RoguePlanet mitigation - block fake wermgr.exe" Description="Blocks executables named wermgr.exe unless launched from the real Windows Error Reporting binary locations." UserOrGroupSid="S-1-1-0" Action="Deny">
+    <FilePathRule Id="$($ids.Wermgr)" Name="RoguePlanet mitigation - block fake wermgr.exe" Description="Blocks executables named wermgr.exe unless launched from the real Windows Error Reporting binary locations." UserOrGroupSid="$sidAllUsers" Action="Deny">
       <Conditions><FilePathCondition Path="*\wermgr.exe" /></Conditions>
       <Exceptions>
         <FilePathCondition Path="%WINDIR%\System32\wermgr.exe" />
@@ -82,7 +86,7 @@ $compatibilityRule
     </FilePathRule>
   </RuleCollection>
   <RuleCollection Type="Appx" EnforcementMode="$enforcement">
-    <FilePublisherRule Id="$($ids.AllowAppxAll)" Name="Compatibility Allow - Everyone - All packaged apps" Description="Keeps this mitigation focused on fake wermgr.exe blocking without packaged-app collateral damage." UserOrGroupSid="S-1-1-0" Action="Allow">
+    <FilePublisherRule Id="$($ids.AllowAppxAll)" Name="Compatibility Allow - All users - All packaged apps" Description="Keeps this mitigation focused on fake wermgr.exe blocking without packaged-app collateral damage." UserOrGroupSid="$sidAllUsers" Action="Allow">
       <Conditions>
         <FilePublisherCondition PublisherName="*" ProductName="*" BinaryName="*">
           <BinaryVersionRange LowSection="0.0.0.0" HighSection="*" />
@@ -112,4 +116,5 @@ if ($PSCmdlet.ShouldProcess('local AppLocker policy', "merge $policyPath in $Mod
 Write-Host "Created policy: $policyPath"
 Write-Host "Mode: $Mode"
 Write-Host "Added compatibility allow rule: $addCompatibilityAllow"
+Write-Host "Locale-neutral policy: uses SIDs, AppLocker event IDs, and Windows environment variables instead of localized group or folder names."
 Write-Host 'Review events: Applications and Services Logs\Microsoft\Windows\AppLocker\EXE and DLL'
