@@ -1,7 +1,7 @@
 # RoguePlanet - Mitigation
 
 Defensive mitigation helpers for blocking RoguePlanet-style fake `wermgr.exe`
-execution without shipping or running the original exploit proof of concept.
+execution.
 
 ## What This Blocks
 
@@ -61,4 +61,3 @@ removes the temporary files.
 This is a focused local mitigation. In enterprise environments, prefer deploying
 equivalent controls through your normal EDR, Intune, GPO, WDAC, or AppLocker
 management pipeline.
-
